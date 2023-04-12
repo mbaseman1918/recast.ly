@@ -3,6 +3,7 @@ import Search from './Search.js';
 import VideoPlayer from './VideoPlayer.js';
 import VideoList from './VideoList.js';
 import exampleVideoData from '../data/exampleVideoData.js';
+import searchYouTube from '../lib/searchYouTube.js';
 
 const {useState} = React;
 
@@ -11,8 +12,21 @@ const {useState} = React;
 
 var App = () => {
 
-  const [videos, setVideos] = useState(exampleVideoData);
+  const [videos, setVideos] = useState([]);
   const [video, setVideo] = useState(exampleVideoData[0]);
+
+  let timeout = null;
+
+  const searchHandler = (e) => {
+    let query = e.target.value;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      searchYouTube(query, (videos => {
+        setVideos(videos);
+      }));
+    }, 500);
+
+  };
   const handleClick = function(selectedVideo) {
     setVideo(selectedVideo);
   };
@@ -20,7 +34,7 @@ var App = () => {
     <div>
       <nav className="navbar">
         <div className="col-md-6 offset-md-3">
-          <div><h5><em>search</em><Search /></h5></div>
+          <div><h5><em>search</em><Search searchHandler={(e) => searchHandler(e)}/></h5></div>
         </div>
       </nav>
       <div className="row">
